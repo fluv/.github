@@ -33,6 +33,9 @@ defaults:
     rulesets:
     - name: default protection
       target: branch
+      bypass_actors:
+      - role: admin
+        bypass_mode: always
       enforcement: active
       conditions:
         ref_name:
