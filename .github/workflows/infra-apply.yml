@@ -2,9 +2,9 @@ name: Apply GitHub changes
 on:
   push:
     branches: [main]
-    paths:
-      - "repos/**"
-      - "files/**"
+  # paths:
+  #   - "repos/**"
+  #   - "files/**"
 jobs:
   apply:
     runs-on: ubuntu-latest
