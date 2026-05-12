@@ -1,0 +1,30 @@
+name: Plan GitHub infra changes
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  plan:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Log in as GitHub App
+        id: generate-token
+        uses: actions/create-github-app-token@v2
+        with:
+          app-id: ${{ vars.APP_ID }}
+          private-key: ${{ secrets.APP_PRIVATE_KEY }}
+          owner: fluv
+
+      - uses: actions/checkout@v6
+
+      - name: Run infra plan
+        run: |
+          gh extension install babarot/gh-infra
+          {
+            echo '## `gh infra plan`'
+            echo '```'
+            gh infra plan ./repos/ 2>&1
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+        env:
+          GH_TOKEN: ${{ steps.generate-token.outputs.token }}
