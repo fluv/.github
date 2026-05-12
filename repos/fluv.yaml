@@ -56,9 +56,17 @@ defaults:
         required_linear_history: false
         required_signatures: false
 repositories:
-  # - name: claude # defined in another file
+  # public repos only:
   - name: .github # org-readme repo
+  - name: barcodebuddy-docker
+  - name: deepseek-review-action
   - name: github # this repo
+  - name: grafana
   - name: kube
+  - name: mcp-grocy-api
   - name: vestibule
   - name: waitrose-mcp
+
+  - name: router-mcp
+    spec:
+      archived: true
