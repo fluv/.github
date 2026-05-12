@@ -15,5 +15,5 @@ jobs:
       - run: |
           gh extension install babarot/gh-infra
           gh infra apply ./repos/ --auto-approve
-      - env:
+        env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
