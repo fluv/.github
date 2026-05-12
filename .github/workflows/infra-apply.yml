@@ -1,0 +1,14 @@
+on:
+  push:
+    branches: [main]
+    paths:
+      - "repos/**"
+      - "files/**"
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - run: gh infra apply ./repos/ --auto-approve
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
