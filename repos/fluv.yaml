@@ -60,4 +60,5 @@ repositories:
   - name: .github # org-readme repo
   - name: github # this repo
   - name: kube
+  - name: vestibule
   - name: waitrose-mcp
