@@ -12,9 +12,15 @@ jobs:
       name: github
       deployment: true
     steps:
+      - name: Log in as GitHub App
+        id: generate-token
+        uses: actions/create-github-app-token@v2
+        with:
+          app-id: ${{ vars.APP_ID }}
+          private-key: ${{ secrets.APP_PRIVATE_KEY }}
       - uses: actions/checkout@v6
       - run: |
           gh extension install babarot/gh-infra
           gh infra apply ./repos/ --auto-approve
         env:
-          GH_TOKEN: ${{ secrets.GH_APP_CLIENT_TOKEN }}
+          GH_TOKEN: ${{ steps.generate-token.outputs.token }}
