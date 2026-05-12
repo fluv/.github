@@ -9,4 +9,4 @@ repos:
         name: gh-infra (validate)
         language: system
         entry: gh infra validate
-        files: ^repos/
+        files: ^repos/.*.ya?ml
