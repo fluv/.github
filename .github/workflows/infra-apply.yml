@@ -7,8 +7,13 @@ on:
 jobs:
   apply:
     runs-on: ubuntu-latest
+    environment:
+      name: github
+      deployment: true
     steps:
       - uses: actions/checkout@v6
-      - run: gh infra apply ./repos/ --auto-approve
-        env:
+      - run: |
+          gh extension install babarot/gh-infra
+          gh infra apply ./repos/ --auto-approve
+      - env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
