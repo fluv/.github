@@ -57,7 +57,7 @@ defaults:
         required_signatures: false
 repositories:
   # - name: claude # defined in another file
-  - name: waitrose-mcp
-  - name: kube
   - name: .github # org-readme repo
   - name: github # this repo
+  - name: kube
+  - name: waitrose-mcp
