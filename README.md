@@ -3,6 +3,11 @@
 Homelab infrastructure for [@zuzak](https://github.com/zuzak).
 Contains AI-agent generated content.
 
+## Infrastructure as code
+
+GitHub repositories in this organisation are managed through via GitOps.
+Their manifests live as YAML in [a repo](https://github.com/fluv/.github/tree/main/repos) and are applied automatically through GitHub Actions using [gh-infra](https://babarot.me/gh-infra/).
+
 ## Organisation avatar
 <img width="2082" height="930" alt="Black and white photograph of ivory figurines: a humanoid figure surrounded by two seals, a walrus, and an arctic fox." src="https://github.com/user-attachments/assets/da2d4aee-dd61-4362-8187-cda0c9e730cc" />
 Organisation avatar is of “Four carved ivory amulets, Eskimo, Aleutian Islands”, held by the Wellcome Collection.
