@@ -59,4 +59,5 @@ repositories:
   # - name: claude # defined in another file
   - name: waitrose-mcp
   - name: kube
-  - name: .github
+  - name: .github # org-readme repo
+  - name: github # this repo
