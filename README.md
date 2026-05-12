@@ -1,15 +1,17 @@
+# fluv
 
-This is a declarative GitHub repository configuration using the [`gh-infra`](https://babarot.me/gh-infra/) CLI.
-It manages the repositories in this organisation, mainly to allow autonomous coding agents to create repositories without being able to delete them.
+Homelab infrastructure for [@zuzak](https://github.com/zuzak).
+Contains AI-agent generated content.
 
-YAML manifests in `repos/` describe repository settings (visibility, labels, milestones, rulesets, merge strategies, Actions permissions).
-Pushing to `main` triggers GitHub Actions to apply the manifests automatically.
-Anything not listed is not managed. Configuration can drift between this repository and reality.
+## Infrastructure as code
 
-## Manifests
+GitHub repositories in this organisation are managed through via GitOps.
+Their manifests live as YAML in [a repo](https://github.com/fluv/.github/tree/main/repos) and are applied automatically through GitHub Actions using [gh-infra](https://babarot.me/gh-infra/).
 
-All GitHub repositories under `fluv` are managed in `repos/fluv.yaml`.
+## Organisation avatar
+<img width="2082" height="930" alt="Black and white photograph of ivory figurines: a humanoid figure surrounded by two seals, a walrus, and an arctic fox." src="https://github.com/user-attachments/assets/da2d4aee-dd61-4362-8187-cda0c9e730cc" />
+Organisation avatar is of “Four carved ivory amulets, Eskimo, Aleutian Islands”, held by the Wellcome Collection.
 
-## Gotchas
-* You cannot delete repositories. If a repository is no longer used, set `archive: true`.
-* If a repository is private, `rulesets: []` must be set due to GitHub Free restrictions. This means they can't use the `fluv` RepositorySet.
+[Wellcome L0008603](https://wellcomecollection.org/works/pc2kj839),
+cropped from the original.
+[CC BY 4.0](https://creativecommons.org/licenses/by/4.0/).
