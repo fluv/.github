@@ -1,0 +1,37 @@
+apiVersion: gh-infra/v1
+kind: FileSet
+metadata:
+  owner: fluv
+
+# Seed an initial README.md into every public repo so that `main` exists
+# from the first apply. This unblocks the normal PR-based bootstrap flow:
+# without an initial commit on main, the first contributor (often a bot)
+# would have to either push directly to main or open a PR with no base,
+# neither of which is permitted by the cluster's authority model.
+#
+# reconcile: create_only ensures gh-infra only touches the README when it
+# does not already exist; existing repos with their own READMEs are
+# left alone, including any content that has drifted from the seed.
+spec:
+  repositories:
+    - .github
+    - barcodebuddy-docker
+    - deepseek-review-action
+    - github
+    - grafana
+    - kube
+    - mcp-grocy-api
+    - notebook
+    - vestibule
+    - waitrose-mcp
+
+  files:
+    - path: README.md
+      reconcile: create_only
+      content: |
+        # <% .Repo.Name %>
+
+        Initial commit seeded by gh-infra. Replace with real content via PR.
+
+  via: push
+  commit_message: "Seed initial README"
