@@ -28,3 +28,4 @@ jobs:
           } >> "$GITHUB_STEP_SUMMARY"
         env:
           GH_TOKEN: ${{ steps.generate-token.outputs.token }}
+          NO_COLOR: "1"
