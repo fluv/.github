@@ -62,5 +62,6 @@ repositories:
   - name: grafana
   - name: kube
   - name: mcp-grocy-api
+  - name: notebook
   - name: vestibule
   - name: waitrose-mcp
