@@ -35,7 +35,7 @@ defaults:
         target: branch
         enforcement: active
         bypass_actors:
-        - team: humans
+        - role: admin
           bypass_mode: always
         conditions:
           ref_name:
@@ -60,9 +60,14 @@ repositories:
   - name: deepseek-review-action
   - name: github # this repo
   - name: grafana
+    description: Automatically synchronised Grafana dashboards
   - name: kube
   - name: mcp-grocy-api
   - name: notebook
+    description: Basic memory-extending MCP
   - name: printer-mcp
+    description: '"For the bit" optimised printer MCP server'
   - name: vestibule
+    description: Simple JSON to MCP layer
   - name: waitrose-mcp
+    description: MCP server to browse and order on Waitrose.com
