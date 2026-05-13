@@ -55,19 +55,25 @@ defaults:
           required_signatures: false
 repositories:
   # public repos only:
-  - name: .github # org-readme repo
+  - name: .github # this repo
   - name: barcodebuddy-docker
   - name: deepseek-review-action
-  - name: github # this repo
+    spec:
+      archived: true
   - name: grafana
-    description: Automatically synchronised Grafana dashboards
+    spec:
+      description: Automatically synchronised Grafana dashboards
   - name: kube
   - name: mcp-grocy-api
   - name: notebook
-    description: Basic memory-extending MCP
+    spec:
+      description: Basic memory-extending MCP
   - name: printer-mcp
-    description: '"For the bit" optimised printer MCP server'
+    spec:
+      description: '"For the bit" optimised printer MCP server'
   - name: vestibule
-    description: Simple JSON to MCP layer
+    spec:
+      description: Simple JSON to MCP layer
   - name: waitrose-mcp
-    description: MCP server to browse and order on Waitrose.com
+    spec:
+      description: MCP server to browse and order on Waitrose.com
