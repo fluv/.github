@@ -16,10 +16,10 @@ defaults:
       pull_requests:
         creation: collaborators_only
     merge_strategy:
-      allow_merge_commit: true
+      allow_merge_commit: false
       allow_squash_merge: true
       allow_rebase_merge: true
-      # allow_auto_merge: true
+      allow_auto_merge: true
     security:
       vulnerability_alerts: true
       automated_security_fixes: true
@@ -35,7 +35,7 @@ defaults:
         target: branch
         enforcement: active
         bypass_actors:
-        - role: admin
+        - team: humans
           bypass_mode: always
         conditions:
           ref_name:
