@@ -64,7 +64,3 @@ repositories:
   - name: mcp-grocy-api
   - name: vestibule
   - name: waitrose-mcp
-
-  - name: router-mcp
-    spec:
-      archived: true
