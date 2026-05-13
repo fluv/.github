@@ -43,7 +43,7 @@ defaults:
             - ~DEFAULT_BRANCH
         rules:
           pull_request:
-            required_approving_review_count: 1
+            required_approving_review_count: 2
             dismiss_stale_reviews_on_push: true
             require_code_owner_review: false
             require_last_push_approval: false
@@ -58,6 +58,7 @@ repositories:
   - name: .github # org-readme repo
   - name: barcodebuddy-docker
   - name: deepseek-review-action
+    archived: true
   - name: github # this repo
   - name: grafana
     description: Automatically synchronised Grafana dashboards
