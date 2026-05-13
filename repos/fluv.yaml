@@ -63,5 +63,6 @@ repositories:
   - name: kube
   - name: mcp-grocy-api
   - name: notebook
+  - name: printer-mcp
   - name: vestibule
   - name: waitrose-mcp
