@@ -20,8 +20,58 @@ jobs:
           private-key: ${{ secrets.GH_INFRA_PRIVATE_KEY }}
           owner: fluv
       - uses: actions/checkout@v6
-      - run: |
+      - name: Apply manifests
+        run: |
           gh extension install babarot/gh-infra
           gh infra apply ./repos/ --auto-approve
+        env:
+          GH_TOKEN: ${{ steps.generate-token.outputs.token }}
+      - name: Seed README into newly-created empty repos
+        # Establishes `main` on any empty repo by creating an initial README
+        # via the Contents API. Without this, the first contributor to a
+        # new repo would have to push directly to main (forbidden by
+        # CLAUDE.md invariant 4) or open a PR with no base branch (not
+        # supported by GitHub). The repo list comes from repos/fluv.yaml
+        # so there's a single source of truth — no duplicated list.
+        run: |
+          set -euo pipefail
+          for repo in $(yq '.repositories[].name' repos/fluv.yaml); do
+            commits=$(gh api "repos/fluv/${repo}/commits" --jq 'length' 2>/dev/null || echo 0)
+            if [ "${commits}" != "0" ]; then
+              continue
+            fi
+            echo "Seeding fluv/${repo} with initial README"
+            content=$(printf '# %s\n\nInitial commit seeded by infra-apply. Replace via PR.\n' "${repo}" | base64 -w0)
+            gh api -X PUT "repos/fluv/${repo}/contents/README.md" \
+              -f message="Seed initial README" \
+              -f content="${content}" \
+              -f branch=main
+          done
+        env:
+          GH_TOKEN: ${{ steps.generate-token.outputs.token }}
+      - name: Ensure all fluv container packages are public
+        # Policy: every container image published under fluv is public.
+        # We don't host private images — pin `image:` to a public registry
+        # and accept the visibility. This step flips any private/internal
+        # package back to public on each apply, so manual UI changes drift
+        # back to the declared state.
+        #
+        # Requires `packages: write` (organization) on the gh-infra App.
+        run: |
+          set -euo pipefail
+          gh api "orgs/fluv/packages?package_type=container" \
+            --jq '.[] | "\(.name) \(.visibility)"' | \
+            while read -r name visibility; do
+              case "${visibility}" in
+                public) continue ;;
+                private|internal)
+                  echo "Flipping fluv/${name} container package to public"
+                  gh api -X PATCH "orgs/fluv/packages/container/${name}" \
+                    -f visibility=public ;;
+                *)
+                  echo "Unknown visibility for ${name}: ${visibility}" >&2
+                  exit 1 ;;
+              esac
+            done
         env:
           GH_TOKEN: ${{ steps.generate-token.outputs.token }}
