@@ -1,16 +1,11 @@
-name: Apply GitHub changes
+name: Plan GitHub infra changes
 on:
-  push:
+  pull_request:
     branches: [main]
-  # paths:
-  #   - "repos/**"
-  #   - "files/**"
+
 jobs:
-  apply:
+  plan:
     runs-on: ubuntu-latest
-    environment:
-      name: github
-      deployment: true
     steps:
       - name: Log in as GitHub App
         id: generate-token
@@ -19,9 +14,12 @@ jobs:
           app-id: ${{ vars.GH_INFRA_APP_ID }}
           private-key: ${{ secrets.GH_INFRA_PRIVATE_KEY }}
           owner: fluv
+
       - uses: actions/checkout@v6
-      - run: |
+
+      - name: Run infra plan
+        run: |
           gh extension install babarot/gh-infra
-          gh infra apply ./repos/ --auto-approve
+          gh infra plan ./repos/
         env:
           GH_TOKEN: ${{ steps.generate-token.outputs.token }}
