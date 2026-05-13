@@ -35,7 +35,7 @@ jobs:
         # so there's a single source of truth — no duplicated list.
         run: |
           set -euo pipefail
-          for repo in $(yq -r '.repositories[].name' repos/fluv.yaml); do
+          for repo in $(yq '.repositories[].name' repos/fluv.yaml); do
             commits=$(gh api "repos/fluv/${repo}/commits" --jq 'length' 2>/dev/null || echo 0)
             if [ "${commits}" != "0" ]; then
               continue
