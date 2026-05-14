@@ -1,9 +1,7 @@
 DeepSeek PR Review
 ==================
 
-The other files in this directory govern an AI code review on pull requests using DeepSeek.
-
-To add repo-specific review guidance,  `.github/deepseek/*.md`). `{{REPO_CONTEXT}}` slot.
+This directory governs an AI code review on pull requests using DeepSeek.
 
 The `prompt-template.md` in this directory is the canonical base template and always loads.
 
