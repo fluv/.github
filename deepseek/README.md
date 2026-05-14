@@ -21,5 +21,5 @@ Placeholders substituted at runtime:
 | `{{REPO_CONTENTS}}` | Full HEAD snapshot (minus `exclude-paths`) |
 | `{{PATCH}}` | `git diff` against the base branch |
 
-For more information and see the underlying code see:
+For more information and to see the underlying code see:
 https://github.com/fluv/kube/tree/main/claude/webhook-receiver
