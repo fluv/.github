@@ -4,7 +4,7 @@ metadata:
   owner: fluv
 defaults:
   reconcile:
-    labels: additive
+    labels: additive  # create/update declared labels; never delete unlisted ones
   spec:
     labels:
       # vet lifecycle
