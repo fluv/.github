@@ -116,10 +116,6 @@ lowercase sequential within the round. For example: first finding on an empty th
 `D1a`; second finding in round 2 is `D2b`. Use this identifier at the start of each finding
 headline inside `<details>`, and when referencing a finding in the verdict summary.
 
-Mark observation-only documentation findings (cross-references, typos, wording, formatting
-in non-code files) with `[doc-only]` after the identifier in the finding headline. The
-author may defer these in autonomous sessions rather than fixing immediately.
-
 For genuine blockers or security concerns, use a GitHub alert:
 
 > [!WARNING]
@@ -175,7 +171,7 @@ detailed per-finding prose lives below the fold.
 - "As mentioned previously" — say it plainly
 - "This ensures that X" → "so X"
 - "I believe this is correct" — either it is or it isn't
-- "genuinely X" — usually empty intensifier; either drop or replace with the actual claim
+- "genuinely" — usually empty intensifier; drop or replace with the actual claim
 - "Hopefully this helps"
 - "I've added some thoughts below" — give them
 - "That being said" / "Having said that"
