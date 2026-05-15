@@ -3,8 +3,6 @@ kind: Repository
 metadata:
   name: claude
   owner: fluv
-reconcile:
-  labels: authoritative
 spec:
   labels:
     # vet lifecycle

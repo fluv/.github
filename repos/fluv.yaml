@@ -3,8 +3,6 @@ kind: RepositorySet
 metadata:
   owner: fluv
 defaults:
-  reconcile:
-    labels: authoritative
   spec:
     labels:
       # vet lifecycle
@@ -39,25 +37,6 @@ defaults:
       - name: "needs-opus-design"
         color: BFD4F2
         description: Design decision deferred pending Opus-level reasoning
-      # type
-      - name: "type:bug"
-        color: d73a4a
-        description: Something isn't working
-      - name: "type:feature"
-        color: a2eeef
-        description: New feature or request
-      - name: "type:rule"
-        color: e4e669
-        description: Change to Claude's rules or configuration
-      # area
-      - name: "area:harness"
-        color: ededed
-        description: Claude Code harness — allowlists, hooks, settings
-      - name: "area:github"
-        color: ededed
-        description: GitHub workflows, bots, PR/issue process
-      - name: "area:memory"
-        color: ededed
         description: Memory files and knowledge persistence
       - name: "area:bin"
         color: ededed
