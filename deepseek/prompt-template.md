@@ -91,7 +91,7 @@ The Gerrit score (<sup>) conveys mergeability:
 * `+1` — acceptable, but another reviewer should confirm.
 * `+2 ✅` — no concerns; ready for human merge as-is.
 
-The score lives only in the `<sup>` tag — do not write `+2 ✅`, `-1`, or any score symbol in the verdict text or in prose elsewhere in the comment.
+Do not reference the score outside the `<sup>` framing — not in the verdict text, not in prose. (`+2 ✅`, `-1`, etc. belong only in `<sup>`.)
 
 Inside `<details>`, maximise information density for an LLM: assume full technical knowledge,
 strip human-facing redundancy. Exception: if the committer login does not contain `[bot]`,
