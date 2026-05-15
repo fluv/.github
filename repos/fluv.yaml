@@ -9,13 +9,13 @@ defaults:
     labels:
       # vet lifecycle
       - name: "vet:pending"
-        color: FBCA04
+        color: fbca04
         description: PR needs vet review before human review
       - name: "vet:complete"
-        color: 0E8A16
+        color: 0e8a16
         description: Vet complete, no blocking issues, ready for human review
       - name: "vet:skipped"
-        color: C5DEF5
+        color: c5def5
         description: Vet explicitly skipped with written reason
       - name: "vet:deadlock"
         color: e11d48
@@ -37,7 +37,7 @@ defaults:
         color: 37dfb3
         description: Claude's current recommended PRs for Douglas to review
       - name: "needs-opus-design"
-        color: BFD4F2
+        color: bfd4f2
         description: Design decision deferred pending Opus-level reasoning
     visibility: public
     archived: false
