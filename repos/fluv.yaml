@@ -37,10 +37,6 @@ defaults:
       - name: "needs-opus-design"
         color: BFD4F2
         description: Design decision deferred pending Opus-level reasoning
-        description: Memory files and knowledge persistence
-      - name: "area:bin"
-        color: ededed
-        description: Scripts in ~/bin or ~/claude/bin
     visibility: public
     archived: false
     features:
