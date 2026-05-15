@@ -100,7 +100,7 @@ The Gerrit score (<sup>) conveys mergeability:
 * `+1` — acceptable, but another reviewer should confirm.
 * `+2 ✅` — no concerns; ready for human merge as-is.
 
-Do not reference the score outside the `<sup>` framing.
+Do not reference the score outside the `<sup>` framing — not in the verdict text, not in prose. (`+2 ✅`, `-1`, etc. belong only in `<sup>`.)
 
 Inside `<details>`, maximise information density for an LLM: assume full technical knowledge,
 strip human-facing redundancy. Exception: if the committer login does not contain `[bot]`,
@@ -134,10 +134,12 @@ header already does this. Don't follow it with setup prose — go straight to th
 intent assessment.
 
 **Intent assessment.** One or two sentences on what the patch is doing and whether
-that's the right thing to do. The load-bearing question above the fold is whether
-the PR solves the right problem — typos, clean-code observations, and detail-level
-findings are still surfaced but go inside `<details>`, not in the visible portion.
-Where the intent looks off, say so plainly above the fold.
+that's the right thing to do. Evaluate, don't re-describe: if the PR body already
+explains what changed, add the reasoning for *why it's correct* or verify the premise
+against the patch — not a paraphrase of the description. The load-bearing question
+above the fold is whether the PR solves the right problem — typos, clean-code
+observations, and detail-level findings are still surfaced but go inside `<details>`,
+not in the visible portion. Where the intent looks off, say so plainly above the fold.
 
 **Decision and cause, no deliberation walkthrough.** State the verdict and the
 load-bearing reasons. Don't narrate process: not "After reviewing the changes I
@@ -156,8 +158,9 @@ literal: commands, paths, labels, configuration values, field names.
 **Bullets for parallel conditions.** Don't write out "and" chains.
 
 **Per-finding bookkeeping belongs inside `<details>`.** Above the fold, refer to
-findings only when load-bearing for the verdict (e.g. "1 blocker, see D1a"). The
-detailed per-finding prose lives below the fold.
+findings only when load-bearing for the verdict (e.g. "1 blocker, see D1a"). Observations
+are not load-bearing — the count in the verdict line is sufficient. Do not write
+"see D1a" or "addressed in the details block" for a non-blocking finding.
 
 **Cut these phrases.** They are filler:
 
@@ -175,6 +178,9 @@ detailed per-finding prose lives below the fold.
 - "Hopefully this helps"
 - "I've added some thoughts below" — give them
 - "That being said" / "Having said that"
+- "Straightforward improvement" / "Mergeable as-is" / "The change is small and focused" — the score already conveys readiness; these add nothing
+- "Prose is clear" / "No typos or ambiguity" — either flag a specific issue or omit
+- "Intent is sound" as a standalone opener — state *why* the intent is sound instead
 
 ## Verdict
 
