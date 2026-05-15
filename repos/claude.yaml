@@ -4,62 +4,6 @@ metadata:
   name: claude
   owner: fluv
 spec:
-  labels:
-    # vet lifecycle
-    - name: "vet:pending"
-      color: FBCA04
-      description: PR needs vet review before human review
-    - name: "vet:complete"
-      color: 0E8A16
-      description: Vet complete, no blocking issues, ready for human review
-    - name: "vet:skipped"
-      color: C5DEF5
-      description: Vet explicitly skipped with written reason
-    - name: "vet:deadlock"
-      color: e11d48
-      description: DS and author deadlocked; needs human adjudication
-    - name: "vet:helpful"
-      color: 1a7f37
-      description: Vet surfaced a blocker or observation that led to a code change
-    # review signals
-    - name: "ds:helpful"
-      color: 0075ca
-      description: DS review surfaced a finding worth acting on
-    - name: "autonomous-ok"
-      color: 0e8a16
-      description: Ready to implement — no design discussion needed before opening a PR
-    - name: "needs-human"
-      color: d876e3
-      description: Blocked on a human action; not ready for autonomous work
-    - name: "review this next"
-      color: 37dfb3
-      description: Claude's current recommended PRs for Douglas to review
-    - name: "needs-opus-design"
-      color: BFD4F2
-      description: Design decision deferred pending Opus-level reasoning
-    # type
-    - name: "type:bug"
-      color: d73a4a
-      description: Something isn't working
-    - name: "type:feature"
-      color: a2eeef
-      description: New feature or request
-    - name: "type:rule"
-      color: e4e669
-      description: Change to Claude's rules or configuration
-    # area
-    - name: "area:harness"
-      color: ededed
-      description: Claude Code harness — allowlists, hooks, settings
-    - name: "area:github"
-      color: ededed
-      description: GitHub workflows, bots, PR/issue process
-    - name: "area:memory"
-      color: ededed
-      description: Memory files and knowledge persistence
-    - name: "area:bin"
-      color: ededed
-      description: Scripts in ~/bin or ~/claude/bin
   visibility: private # do not change this without approval from @zuzak
   archived: false
   features:
