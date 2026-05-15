@@ -3,8 +3,8 @@ kind: RepositorySet
 metadata:
   owner: fluv
 defaults:
-  # No reconcile.labels block — gh-infra defaults to additive mode,
-  # which creates/updates declared labels without deleting unlisted ones.
+  reconcile:
+    labels: additive
   spec:
     labels:
       # vet lifecycle
