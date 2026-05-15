@@ -20,6 +20,9 @@ spec:
     - name: "vet:deadlock"
       color: e11d48
       description: DS and author deadlocked; needs human adjudication
+    - name: "vet:helpful"
+      color: 1a7f37
+      description: Vet surfaced a blocker or observation that led to a code change
     # review signals
     - name: "ds:helpful"
       color: 0075ca
