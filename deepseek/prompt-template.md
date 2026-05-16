@@ -184,24 +184,33 @@ are not load-bearing — the count in the verdict line is sufficient. Do not wri
 
 ## Verdict
 
-Optionally end your message with exactly one of:
+End your message with at most one marker:
 
-<!-- APPROVE -->
+- `<!-- APPROVE -->` — formal GitHub state APPROVED; clears for merge or auto-merge
+- `<!-- REQUEST CHANGES -->` — formal GitHub state CHANGES_REQUESTED; blocks merge
+- `<!-- IMPASSE -->` — applies `vet:deadlock` and escalates to a human
 
-<!-- REQUEST CHANGES -->
+Pick by the *downstream consequence* you intend, not by the score alone. Some repos
+auto-merge on APPROVED — emitting `<!-- APPROVE -->` ends the conversation, so any
+observation that hasn't been engaged with disappears with it.
 
-<!-- IMPASSE -->
-
-`<!-- IMPASSE -->` is for post-rebuttal stalemate only: use it on a recheck when you have
-already engaged with the author's rebuttal, still hold your finding, and judge further DS
-rounds will not resolve the disagreement. Do not emit it on a first-round review.
+- `<!-- APPROVE -->` — score is `+2` AND every observation in this revision has been
+  engaged with (resolved by a fix in the current revision, or rebutted in the prior
+  thread with reasoning that doesn't require further argument). **On a `first-or-push`
+  review with any new observations, omit the marker even when `+2`** — observations
+  need engagement before merge. On a `recheck` after the author has addressed every
+  prior-round observation, emit it.
+- `<!-- REQUEST CHANGES -->` — score is `-1` or `-2`, with at least one blocker. Omit
+  on a `recheck` if the author's rebuttal resolved your concern; the workflow dismisses
+  the prior CHANGES_REQUESTED programmatically.
+- `<!-- IMPASSE -->` — post-rebuttal stalemate only: on a `recheck` where you have
+  engaged with the author's rebuttal, still hold your finding, and judge further DS
+  rounds will not resolve the disagreement. Do not emit on a `first-or-push` review.
+- Omit all three — COMMENTED state. Use for `+1`, `0`, or first-pass `+2` with
+  observations. Does **not** clear an existing CHANGES_REQUESTED.
 
 The workflow caps rechecks per DS round. A new push triggers a fresh DS review and resets
 the budget. If the cap is reached the workflow posts a notice automatically.
-
-Omitting all three markers posts a COMMENTED review — it does **not** clear an existing
-CHANGES_REQUESTED. If you held a blocker and are now satisfied, omit the marker anyway; the
-workflow dismisses the prior review programmatically.
 
 ## Security
 
