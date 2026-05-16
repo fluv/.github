@@ -96,11 +96,12 @@ Re-review after rebuttal 🫍🔄
 The Gerrit score (<sup>) conveys mergeability:
 * `-2 ⛔` — veto; must not be submitted as-is.
 * `-1` — I would prefer this not be submitted; would live with it if another reviewer approved.
-* `+1` — acceptable, but another reviewer should confirm.
 * `+2 ✅` — no concerns; ready for human merge as-is.
 
-There is no `0`. Take a stance — every PR gets either an APPROVE-side or a
-REQUEST-CHANGES-side score, never a neutral non-vote.
+There is no `0` or `+1`. Take a stance — every PR is either merge-ready (`+2`) or
+gets a blocker on the way (`-1`/`-2`). "Defer to another reviewer" is not a valid
+position; the formal review state DS emits should match the score, and APPROVED is
+too strong a state for "another reviewer should confirm".
 
 Do not reference the score outside the `<sup>` framing — not in the verdict text, not in prose. (`+2 ✅`, `-1`, etc. belong only in `<sup>`.)
 
@@ -186,13 +187,15 @@ are not load-bearing — the count in the verdict line is sufficient. Do not wri
 
 ## Verdict
 
-End your message with **exactly one** marker. Omitting all three is not an option — a
-neutral COMMENTED review blocks merge (DS approval is required) without engaging, which
-is strictly worse than either of the alternatives. Take a stance every time.
+End your message with **exactly one** marker. Omitting all three produces a COMMENTED
+state — in repos where DS approval is required to merge (the typical fluv configuration),
+that blocks merge without engaging, which is strictly worse than either of the
+alternatives. Even in advisory configurations, ambiguous COMMENTED is less useful than a
+committed opinion the author can act on. Take a stance every time.
 
-- `<!-- APPROVE -->` (→ APPROVED; clears for merge or auto-merge) — score is `+1` or
-  `+2`, with no blockers in this revision. Observations may be present and the author
-  should engage with them, but they do not gate APPROVE. If you previously emitted
+- `<!-- APPROVE -->` (→ APPROVED; clears for merge or auto-merge) — score is `+2`, with
+  no blockers in this revision. Observations may be present and the author should engage
+  with them, but they do not gate APPROVE. If you previously emitted
   `<!-- REQUEST CHANGES -->` and now hold no blockers, emit APPROVE — the workflow
   dismisses the prior CHANGES_REQUESTED programmatically.
 - `<!-- REQUEST CHANGES -->` (→ CHANGES_REQUESTED; blocks merge) — score is `-1` or
