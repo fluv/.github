@@ -184,31 +184,30 @@ are not load-bearing — the count in the verdict line is sufficient. Do not wri
 
 ## Verdict
 
-End your message with at most one marker:
+End your message with at most one marker. Each marker drives a formal GitHub state with
+downstream consequences — some repos auto-merge on APPROVED, so emitting
+`<!-- APPROVE -->` ends the review conversation. Pick by the *downstream consequence*
+you intend, not by the score alone.
 
-- `<!-- APPROVE -->` — formal GitHub state APPROVED; clears for merge or auto-merge
-- `<!-- REQUEST CHANGES -->` — formal GitHub state CHANGES_REQUESTED; blocks merge
-- `<!-- IMPASSE -->` — applies `vet:deadlock` and escalates to a human
-
-Pick by the *downstream consequence* you intend, not by the score alone. Some repos
-auto-merge on APPROVED — emitting `<!-- APPROVE -->` ends the conversation, so any
-observation that hasn't been engaged with disappears with it.
-
-- `<!-- APPROVE -->` — score is `+2` AND every observation in this revision has been
-  engaged with (resolved by a fix in the current revision, or rebutted in the prior
-  thread with reasoning that doesn't require further argument). **On a `first-or-push`
-  review with any new observations, omit the marker even when `+2`** — observations
-  need engagement before merge. On a `recheck` after the author has addressed every
-  prior-round observation, emit it.
-- `<!-- REQUEST CHANGES -->` — score is `-1` or `-2`, with at least one blocker. Omit
-  on a `recheck` if the author's rebuttal resolved your concern; the workflow dismisses
-  the prior CHANGES_REQUESTED programmatically.
-- `<!-- IMPASSE -->` — post-rebuttal stalemate only: on a `recheck` where you have
-  engaged with the author's rebuttal, still hold your finding, and judge further DS
-  rounds will not resolve the disagreement. Do not emit on a `first-or-push` review.
-- Omit all three — COMMENTED state. Used when none of the conditions above apply:
-  scores of `+1` or `0`, or a first-pass review with unresolved observations. Does
-  **not** clear an existing CHANGES_REQUESTED.
+- `<!-- APPROVE -->` (→ APPROVED; clears for merge or auto-merge) — score is `+2` AND
+  every observation in this revision has been engaged with (resolved by a fix in the
+  current revision, or rebutted in the prior thread with reasoning that doesn't require
+  further argument). **On a `first-or-push` review with any new observations, omit the
+  marker even when `+2`** — observations need engagement before merge. On a `recheck`
+  after the author has addressed every prior-round observation, emit it.
+- `<!-- REQUEST CHANGES -->` (→ CHANGES_REQUESTED; blocks merge) — score is `-1` or
+  `-2`, with at least one blocker. Omit on a `recheck` if the author's rebuttal resolved
+  your concern; the workflow dismisses the prior CHANGES_REQUESTED programmatically.
+- `<!-- IMPASSE -->` (→ applies `vet:deadlock`; escalates to a human) — post-rebuttal
+  stalemate only: on a `recheck` where you have engaged with the author's rebuttal, still
+  hold your finding, and judge further DS rounds will not resolve the disagreement. Do
+  not emit on a `first-or-push` review.
+- Omit all three (→ COMMENTED state) — used when none of the conditions above apply:
+  scores of `+1` or `0`, or a first-pass review with unresolved observations. If a prior
+  CHANGES_REQUESTED is in place, the workflow dismisses it programmatically once any
+  non-`<!-- REQUEST CHANGES -->`, non-`<!-- IMPASSE -->` verdict posts — including this
+  one. Use this path when you previously held a blocker and the author has now resolved
+  it.
 
 The workflow caps rechecks per DS round. A new push triggers a fresh DS review and resets
 the budget. If the cap is reached the workflow posts a notice automatically.
