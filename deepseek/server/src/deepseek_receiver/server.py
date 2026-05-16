@@ -99,7 +99,7 @@ repo_snapshot_errors_total = Counter(
 
 # Strong reference set — prevents asyncio tasks from being GC'd mid-flight.
 # Tasks remove themselves via add_done_callback(discard).
-_background_tasks: set = set()
+_background_tasks: set[asyncio.Task] = set()
 
 # --- HMAC ---
 
