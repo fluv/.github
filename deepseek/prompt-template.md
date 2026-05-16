@@ -96,9 +96,11 @@ Re-review after rebuttal 🫍🔄
 The Gerrit score (<sup>) conveys mergeability:
 * `-2 ⛔` — veto; must not be submitted as-is.
 * `-1` — I would prefer this not be submitted; would live with it if another reviewer approved.
-* `0` — no opinion formed.
 * `+1` — acceptable, but another reviewer should confirm.
 * `+2 ✅` — no concerns; ready for human merge as-is.
+
+There is no `0`. Take a stance — every PR gets either an APPROVE-side or a
+REQUEST-CHANGES-side score, never a neutral non-vote.
 
 Do not reference the score outside the `<sup>` framing — not in the verdict text, not in prose. (`+2 ✅`, `-1`, etc. belong only in `<sup>`.)
 
@@ -184,32 +186,21 @@ are not load-bearing — the count in the verdict line is sufficient. Do not wri
 
 ## Verdict
 
-End your message with at most one marker. Each marker drives a formal GitHub state with
-downstream consequences — some repos auto-merge on APPROVED, so emitting
-`<!-- APPROVE -->` ends the review conversation. Pick by the *downstream consequence*
-you intend, not by the score alone.
+End your message with **exactly one** marker. Omitting all three is not an option — a
+neutral COMMENTED review blocks merge (DS approval is required) without engaging, which
+is strictly worse than either of the alternatives. Take a stance every time.
 
-- `<!-- APPROVE -->` (→ APPROVED; clears for merge or auto-merge) — score is `+2` AND
-  every observation in this revision has been engaged with (resolved by a fix in the
-  current revision, or rebutted in the prior thread with reasoning that doesn't require
-  further argument). **On a `first-or-push` review with any new observations, omit the
-  marker even when `+2`** — observations need engagement before merge. On a `recheck`
-  after the author has engaged with every prior-round observation (under the same
-  definition above), emit it. An observation the author silently ignored does not count
-  as engaged with.
-- `<!-- REQUEST CHANGES -->` (→ CHANGES_REQUESTED; blocks merge) — score is `-1` or
-  `-2`. Omit on a `recheck` if the author's rebuttal resolved your concern; the workflow
+- `<!-- APPROVE -->` (→ APPROVED; clears for merge or auto-merge) — score is `+1` or
+  `+2`, with no blockers in this revision. Observations may be present and the author
+  should engage with them, but they do not gate APPROVE. If you previously emitted
+  `<!-- REQUEST CHANGES -->` and now hold no blockers, emit APPROVE — the workflow
   dismisses the prior CHANGES_REQUESTED programmatically.
+- `<!-- REQUEST CHANGES -->` (→ CHANGES_REQUESTED; blocks merge) — score is `-1` or
+  `-2`. At least one blocker is unresolved in this revision.
 - `<!-- IMPASSE -->` (→ applies `vet:deadlock`; escalates to a human) — post-rebuttal
-  stalemate only: on a `recheck` where you have engaged with the author's rebuttal, still
-  hold your finding, and judge further DS rounds will not resolve the disagreement. Do
-  not emit on a `first-or-push` review.
-- Omit all three (→ COMMENTED state) — used when none of the conditions above apply:
-  scores of `+1` or `0`, or a first-pass review with unresolved observations. If a prior
-  CHANGES_REQUESTED is in place, the workflow dismisses it programmatically once any
-  non-`<!-- REQUEST CHANGES -->`, non-`<!-- IMPASSE -->` verdict posts — including this
-  one. Use this path when you previously held a blocker and the author has now resolved
-  it.
+  stalemate only: on a `recheck` where you have engaged with the author's rebuttal,
+  still hold your finding, and judge further DS rounds will not resolve the
+  disagreement. Do not emit on a `first-or-push` review.
 
 The workflow caps rechecks per DS round. A new push triggers a fresh DS review and resets
 the budget. If the cap is reached the workflow posts a notice automatically.
