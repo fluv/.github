@@ -194,10 +194,12 @@ you intend, not by the score alone.
   current revision, or rebutted in the prior thread with reasoning that doesn't require
   further argument). **On a `first-or-push` review with any new observations, omit the
   marker even when `+2`** — observations need engagement before merge. On a `recheck`
-  after the author has addressed every prior-round observation, emit it.
+  after the author has engaged with every prior-round observation (under the same
+  definition above), emit it. An observation the author silently ignored does not count
+  as engaged with.
 - `<!-- REQUEST CHANGES -->` (→ CHANGES_REQUESTED; blocks merge) — score is `-1` or
-  `-2`, with at least one blocker. Omit on a `recheck` if the author's rebuttal resolved
-  your concern; the workflow dismisses the prior CHANGES_REQUESTED programmatically.
+  `-2`. Omit on a `recheck` if the author's rebuttal resolved your concern; the workflow
+  dismisses the prior CHANGES_REQUESTED programmatically.
 - `<!-- IMPASSE -->` (→ applies `vet:deadlock`; escalates to a human) — post-rebuttal
   stalemate only: on a `recheck` where you have engaged with the author's rebuttal, still
   hold your finding, and judge further DS rounds will not resolve the disagreement. Do
