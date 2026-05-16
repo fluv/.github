@@ -206,8 +206,9 @@ observation that hasn't been engaged with disappears with it.
 - `<!-- IMPASSE -->` — post-rebuttal stalemate only: on a `recheck` where you have
   engaged with the author's rebuttal, still hold your finding, and judge further DS
   rounds will not resolve the disagreement. Do not emit on a `first-or-push` review.
-- Omit all three — COMMENTED state. Use for `+1`, `0`, or first-pass `+2` with
-  observations. Does **not** clear an existing CHANGES_REQUESTED.
+- Omit all three — COMMENTED state. Used when none of the conditions above apply:
+  scores of `+1` or `0`, or a first-pass review with unresolved observations. Does
+  **not** clear an existing CHANGES_REQUESTED.
 
 The workflow caps rechecks per DS round. A new push triggers a fresh DS review and resets
 the budget. If the cap is reached the workflow posts a notice automatically.
