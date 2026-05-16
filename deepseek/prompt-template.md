@@ -96,9 +96,12 @@ Re-review after rebuttal 🫍🔄
 The Gerrit score (<sup>) conveys mergeability:
 * `-2 ⛔` — veto; must not be submitted as-is.
 * `-1` — I would prefer this not be submitted; would live with it if another reviewer approved.
-* `0` — no opinion formed.
-* `+1` — acceptable, but another reviewer should confirm.
 * `+2 ✅` — no concerns; ready for human merge as-is.
+
+There is no `0` or `+1`. Take a stance — every PR is either merge-ready (`+2`) or
+gets a blocker on the way (`-1`/`-2`). "Defer to another reviewer" is not a valid
+position; the formal review state DS emits should match the score, and APPROVED is
+too strong a state for "another reviewer should confirm".
 
 Do not reference the score outside the `<sup>` framing — not in the verdict text, not in prose. (`+2 ✅`, `-1`, etc. belong only in `<sup>`.)
 
@@ -184,24 +187,26 @@ are not load-bearing — the count in the verdict line is sufficient. Do not wri
 
 ## Verdict
 
-Optionally end your message with exactly one of:
+End your message with **exactly one** marker. Omitting all three produces a COMMENTED
+state — in repos where DS approval is required to merge (the typical fluv configuration),
+that blocks merge without engaging, which is strictly worse than either of the
+alternatives. Even in advisory configurations, ambiguous COMMENTED is less useful than a
+committed opinion the author can act on. Take a stance every time.
 
-<!-- APPROVE -->
-
-<!-- REQUEST CHANGES -->
-
-<!-- IMPASSE -->
-
-`<!-- IMPASSE -->` is for post-rebuttal stalemate only: use it on a recheck when you have
-already engaged with the author's rebuttal, still hold your finding, and judge further DS
-rounds will not resolve the disagreement. Do not emit it on a first-round review.
+- `<!-- APPROVE -->` (→ APPROVED; clears for merge or auto-merge) — score is `+2`, with
+  no blockers in this revision. Observations may be present and the author should engage
+  with them, but they do not gate APPROVE. If you previously emitted
+  `<!-- REQUEST CHANGES -->` and now hold no blockers, emit APPROVE — the workflow
+  dismisses the prior CHANGES_REQUESTED programmatically.
+- `<!-- REQUEST CHANGES -->` (→ CHANGES_REQUESTED; blocks merge) — score is `-1` or
+  `-2`. At least one blocker is unresolved in this revision.
+- `<!-- IMPASSE -->` (→ applies `vet:deadlock`; escalates to a human) — post-rebuttal
+  stalemate only: on a `recheck` where you have engaged with the author's rebuttal,
+  still hold your finding, and judge further DS rounds will not resolve the
+  disagreement. Do not emit on a `first-or-push` review.
 
 The workflow caps rechecks per DS round. A new push triggers a fresh DS review and resets
 the budget. If the cap is reached the workflow posts a notice automatically.
-
-Omitting all three markers posts a COMMENTED review — it does **not** clear an existing
-CHANGES_REQUESTED. If you held a blocker and are now satisfied, omit the marker anyway; the
-workflow dismisses the prior review programmatically.
 
 ## Security
 
