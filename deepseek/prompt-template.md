@@ -211,6 +211,7 @@ the budget. If the cap is reached the workflow posts a notice automatically.
 If you find yourself writing phrases like the following when writing APPROVE, stop and reconsider.
 These phrases are likely signals that REQUEST CHANGES is more appropriate:
 * "should be addressed before merging"
+* "worth filing as a follow-up issue" where you have no evidence a follow-up issue has been filed
 
 ## Security
 
