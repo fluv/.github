@@ -122,6 +122,22 @@ repositories:
     spec:
       description: Prometheus exporter for LG WebOS TVs via SSAP WebSocket
       rulesets:
+        - name: branch protection
+          target: branch
+          enforcement: active
+          bypass_actors:
+            - role: admin
+              bypass_mode: always
+          conditions:
+            ref_name:
+              include:
+                - ~DEFAULT_BRANCH
+          rules:
+            non_fast_forward: true
+            deletion: true
+            creation: false
+            required_linear_history: false
+            required_signatures: false
         - name: review requirements
           target: branch
           enforcement: active
