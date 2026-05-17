@@ -3,7 +3,7 @@ DeepSeek review receiver
 
 GitHub webhook receiver that takes `pull_request` events from any fluv repo, builds the prompt by combining `../prompt-template.md` with the patch and repo contents, calls the DeepSeek API, and posts the result as a PR review under `fluv-deepseek[bot]`.
 
-Deployed in `claude` namespace on the homelab cluster — see `fluv/kube/claude/webhook-receiver/`. Image: `ghcr.io/fluv/deepseek-receiver:v<version>` (semver tag, no floating `:main`).
+Deployed in `claude` namespace on the homelab cluster — see `fluv/kube/claude/webhook-receiver/`. Image: `ghcr.io/fluv/deepseek-receiver:main@sha256:<digest>` (Renovate keeps the digest current).
 
 ## Layout
 
@@ -34,9 +34,11 @@ deepseek/server/
 
 ## Image
 
-Built and pushed to GHCR on every push to `main` (tagged `sha-<short>`) and on `v*` tags (tagged with the semver). No `:main` floating tag — deployments reference a specific `:vX.Y.Z` and Renovate auto-PRs digest pins. Multi-arch (`linux/arm64`, `linux/amd64`) — Pi runs arm64; future x86 nodes get amd64 from the same tag.
+Built and pushed to GHCR on every push to `main` (tagged `:main` and `sha-<short>`) and on `v*` tags (tagged with the semver). Multi-arch (`linux/arm64`, `linux/amd64`) — Pi runs arm64; future x86 nodes get amd64 from the same tag.
 
-To cut a new release: bump `version` in `pyproject.toml`, merge, then push a matching git tag (e.g. `git tag v1.0.1 && git push origin v1.0.1`). The workflow tags the image as `v1.0.1` and `1.0`.
+Deployments reference `ghcr.io/fluv/deepseek-receiver:main@sha256:<digest>`. Renovate opens PRs to bump the digest whenever a new image is pushed — matching the pattern used by `printer-mcp`.
+
+Versioned tags (`:vX.Y.Z`) are still supported for deliberate releases: bump `version` in `pyproject.toml`, merge, then `git tag vX.Y.Z && git push origin vX.Y.Z`.
 
 ## History
 
