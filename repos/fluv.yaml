@@ -110,6 +110,29 @@ repositories:
   - name: lgtv-exporter
     spec:
       description: Prometheus exporter for LG WebOS TVs via SSAP WebSocket
+      rulesets:
+        - name: default protection
+          target: branch
+          enforcement: active
+          bypass_actors:
+            - role: admin
+              bypass_mode: always
+          conditions:
+            ref_name:
+              include:
+                - ~DEFAULT_BRANCH
+          rules:
+            pull_request:
+              required_approving_review_count: 1
+              dismiss_stale_reviews_on_push: true
+              require_code_owner_review: false
+              require_last_push_approval: true
+              required_review_thread_resolution: false
+            non_fast_forward: true
+            deletion: true
+            creation: false
+            required_linear_history: false
+            required_signatures: false
   - name: waitrose-mcp
     spec:
       description: MCP server to browse and order on Waitrose.com
