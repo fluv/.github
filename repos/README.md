@@ -8,8 +8,16 @@ Anything not listed is not managed. Configuration can drift between this reposit
 
 ## Manifests
 
-All GitHub repositories under `fluv` are managed in `repos/fluv.yaml`.
+Repositories are split by oversight level:
+
+| File | Oversight | `required_approving_review_count` | Use for |
+|---|---|---|---|
+| `fluv.yaml` | Human | 2 | Production infrastructure (e.g. `kube`) |
+| `fluv-robot.yaml` | DeepSeek only | 1 | Low-risk app repos |
+| `fluv-archived.yaml` | None | — | Archived public repos |
+
+To add a repo, append it under `repositories` in the appropriate file. Only add a `spec:` block when overriding a default from that file's `RepositorySet`.
 
 ## Gotchas
-* You cannot delete repositories. If a repository is no longer used, set `archive: true`.
-* If a repository is private, `rulesets: []` must be set due to GitHub Free restrictions. This means they can't use the `fluv` RepositorySet.
+* You cannot delete repositories. If a repository is no longer used, set `archived: true` and move it to `fluv-archived.yaml`.
+* Private repos must set `rulesets: []` due to GitHub Free restrictions — they cannot use the shared RepositorySet rulesets.
