@@ -107,6 +107,9 @@ repositories:
   - name: vestibule
     spec:
       description: Simple JSON to MCP layer
+  - name: lgtv-exporter
+    spec:
+      description: Prometheus exporter for LG WebOS TVs via SSAP WebSocket
   - name: waitrose-mcp
     spec:
       description: MCP server to browse and order on Waitrose.com
