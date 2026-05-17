@@ -6,16 +6,6 @@ defaults:
   spec:
     visibility: public
     archived: true
-    features:
-      projects: false
-      wiki: false
-      discussions: false
-    security:
-      vulnerability_alerts: false
-      automated_security_fixes: false
-      private_vulnerability_reporting: false
-    actions:
-      enabled: false
     rulesets: []
 repositories:
   # Archived public repos — no active development
