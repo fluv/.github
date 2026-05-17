@@ -1,0 +1,70 @@
+apiVersion: gh-infra/v1
+kind: RepositorySet
+metadata:
+  owner: fluv
+defaults:
+  reconcile:
+    labels: additive
+  spec:
+    visibility: public
+    archived: false
+    features:
+      projects: false
+      wiki: false
+      discussions: false
+      pull_requests:
+        creation: collaborators_only
+    merge_strategy:
+      allow_merge_commit: false
+      allow_squash_merge: true
+      allow_rebase_merge: true
+      allow_auto_merge: true
+    security:
+      vulnerability_alerts: true
+      automated_security_fixes: true
+      private_vulnerability_reporting: false
+    actions:
+      enabled: true
+      allowed_actions: all
+      sha_pinning_required: false
+      workflow_permissions: read
+      can_approve_pull_requests: true
+    rulesets:
+      - name: branch protection
+        target: branch
+        enforcement: active
+        bypass_actors:
+          - role: admin
+            bypass_mode: always
+        conditions:
+          ref_name:
+            include:
+              - ~DEFAULT_BRANCH
+        rules:
+          non_fast_forward: true
+          deletion: true
+          creation: false
+          required_linear_history: false
+          required_signatures: false
+      - name: review requirements
+        target: branch
+        enforcement: active
+        bypass_actors:
+          - role: admin
+            bypass_mode: always
+        conditions:
+          ref_name:
+            include:
+              - ~DEFAULT_BRANCH
+        rules:
+          pull_request:
+            required_approving_review_count: 1
+            dismiss_stale_reviews_on_push: true
+            require_code_owner_review: false
+            require_last_push_approval: true
+            required_review_thread_resolution: false
+repositories:
+  # DS-reviewed public repos — robot approval sufficient to merge
+  - name: lgtv-exporter
+    spec:
+      description: Prometheus exporter for LG WebOS TVs via SSAP WebSocket
