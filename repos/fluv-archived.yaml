@@ -1,0 +1,12 @@
+apiVersion: gh-infra/v1
+kind: RepositorySet
+metadata:
+  owner: fluv
+defaults:
+  spec:
+    visibility: public
+    archived: true
+    rulesets: []
+repositories:
+  # Archived public repos — no active development
+  - name: deepseek-review-action

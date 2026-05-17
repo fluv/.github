@@ -6,6 +6,11 @@ DeepSeek is configured to automatically run code reviews against PRs in all fluv
 The main prompt is in `deepseek/prompt-template.md`. Do not rename this file; it is hardcoded into the orchestrating script.
 The DeepSeek script is in the `zuzak/kube` repository.
 
-To configure a ruleset to require DeepSeek review before Claude can merge it, set the required_approving_review_count to 1.
-To configure a ruleset so that Claude can only merge if there is also approval from a human, set the required_approving_review_count to 2. 
+Repositories are split across three manifest files by oversight level:
+
+* `repos/fluv.yaml` — human-reviewed repos (`required_approving_review_count: 2`). Use for anything that reaches production infrastructure (e.g. `kube`).
+* `repos/fluv-robot.yaml` — DS-reviewed repos (`required_approving_review_count: 1`). Use for low-risk app repos where robot review is sufficient to merge.
+* `repos/fluv-archived.yaml` — archived public repos. No rulesets, no active development.
+
+To add a new repo, append it under `repositories` in the appropriate file. Add a `spec:` block only when overriding a default.
 
