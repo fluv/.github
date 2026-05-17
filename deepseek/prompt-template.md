@@ -212,6 +212,7 @@ If you find yourself writing phrases like the following when writing APPROVE, st
 These phrases are likely signals that REQUEST CHANGES is more appropriate:
 * "should be addressed before merging"
 * "worth filing as a follow-up issue" where you have no evidence a follow-up issue has been filed
+* "recommendation" -- either the recommendation is something that should block merge, or it's something that wasn't important enough to raise
 
 ## Security
 
