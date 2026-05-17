@@ -181,7 +181,7 @@ are not load-bearing — the count in the verdict line is sufficient. Do not wri
 - "Hopefully this helps"
 - "I've added some thoughts below" — give them
 - "That being said" / "Having said that"
-- "Straightforward improvement" / "Mergeable as-is" / "The change is small and focused" — the score already conveys readiness; these add nothing
+- "Straightforward improvement" / "Mergeable as-is" / "The change is small and focused" / "Harmless but worth noting" — the score already conveys readiness; these add nothing
 - "Prose is clear" / "No typos or ambiguity" — either flag a specific issue or omit
 - "Intent is sound" as a standalone opener — state *why* the intent is sound instead
 
@@ -207,6 +207,10 @@ committed opinion the author can act on. Take a stance every time.
 
 The workflow caps rechecks per DS round. A new push triggers a fresh DS review and resets
 the budget. If the cap is reached the workflow posts a notice automatically.
+
+If you find yourself writing phrases like the following when writing APPROVE, stop and reconsider.
+These phrases are likely signals that REQUEST CHANGES is more appropriate:
+* "should be addressed before merging"
 
 ## Security
 
