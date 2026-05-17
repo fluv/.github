@@ -38,6 +38,8 @@ Built and pushed to GHCR on every push to `main` (tagged `:main` and `sha-<short
 
 Deployments reference `ghcr.io/fluv/deepseek-receiver:main@sha256:<digest>`. Renovate opens PRs to bump the digest whenever a new image is pushed — matching the pattern used by `printer-mcp`.
 
+Versioned tags (`:vX.Y.Z`) are still supported for deliberate releases: bump `version` in `pyproject.toml`, merge, then `git tag vX.Y.Z && git push origin vX.Y.Z`.
+
 ## History
 
 Previously inlined as a 530-line Python script in a Kubernetes ConfigMap. Extracted to a real image so the source can be reviewed in version control and so DeepSeek itself can read its own runtime when reviewing changes to the prompt template.
