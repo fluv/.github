@@ -61,6 +61,9 @@ defaults:
             required_review_thread_resolution: false
 repositories:
   # DS-reviewed public repos — robot approval sufficient to merge
+  - name: grafana
+    spec:
+      description: Automatically synchronised Grafana dashboards
   - name: lgtv-exporter
     spec:
       description: Prometheus exporter for LG WebOS TVs via SSAP WebSocket

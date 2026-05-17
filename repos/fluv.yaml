@@ -97,9 +97,6 @@ repositories:
   # Human-reviewed public repos (required_approving_review_count: 2)
   - name: .github # this repo
   - name: barcodebuddy-docker
-  - name: grafana
-    spec:
-      description: Automatically synchronised Grafana dashboards
   - name: kube
   - name: mcp-grocy-api
   - name: notebook
