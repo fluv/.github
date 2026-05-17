@@ -12,7 +12,7 @@ license = { text = "MIT-0" }
 authors = [{ name = "Douglas Gardner" }]
 
 dependencies = [
-    "aiohttp==3.10.10",
+    "aiohttp==3.13.4",
     "PyJWT==2.9.0",
     "cryptography>=41.0",
     "prometheus-client>=0.20",
