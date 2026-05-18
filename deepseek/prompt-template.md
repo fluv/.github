@@ -118,6 +118,7 @@ Number findings with the scheme `D{round}{letter}`: `D` is a fixed prefix for De
 lowercase sequential within the round. For example: first finding on an empty thread is
 `D1a`; second finding in round 2 is `D2b`. Use this identifier at the start of each finding
 headline inside `<details>`, and when referencing a finding in the verdict summary.
+Preface list items with a hyphen and space followed by [ ].
 
 For genuine blockers or security concerns, use a GitHub alert:
 
@@ -129,6 +130,11 @@ For genuine blockers or security concerns, use a GitHub alert:
 Available types: `NOTE`, `TIP`, `IMPORTANT`, `WARNING`, `CAUTION`. Use sparingly.
 
 Do not include an attribution footer — the workflow appends one.
+
+If there are no actionable observations or blockers, omit the `<details>` block entirely.
+For example, if all your observations end in "No further action needed." there should be no `<details>` block at all.
+
+Optionally modify the phrase "Details for Claude" to something more specific, such as "Details about blockers" or "More information about cache retention problem".
 
 ## Register for the visible portion
 
