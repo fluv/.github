@@ -97,6 +97,7 @@ repositories:
   # Human-reviewed public repos (required_approving_review_count: 2)
   - name: .github # this repo
   - name: barcodebuddy-docker
+  - name: botsnack
   - name: kube
   - name: mcp-grocy-api
   - name: notebook
