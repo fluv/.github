@@ -156,7 +156,8 @@ def _get_gh_token() -> str:
 
 def _gh(path: str, method: str = "GET", body=None, max_retries: int = 3):
     data = json.dumps(body).encode() if body else None
-    for attempt in range(max_retries):
+    retries = max_retries if method == "GET" else 1
+    for attempt in range(retries):
         token = _get_gh_token()
         url = f"https://api.github.com{path}"
         req = urllib.request.Request(url, method=method, data=data)
@@ -168,12 +169,14 @@ def _gh(path: str, method: str = "GET", body=None, max_retries: int = 3):
             with urllib.request.urlopen(req, timeout=30) as resp:
                 return json.load(resp)
         except urllib.error.HTTPError as e:
-            if e.code < 500 or attempt == max_retries - 1:
+            if e.code < 500 or attempt == retries - 1:
                 raise
+            log.warning("_gh transient error %d path=%s attempt=%d — retrying", e.code, path, attempt + 1)
             time.sleep(2 ** attempt)
-        except urllib.error.URLError:
-            if attempt == max_retries - 1:
+        except urllib.error.URLError as e:
+            if attempt == retries - 1:
                 raise
+            log.warning("_gh network error path=%s attempt=%d: %s — retrying", path, attempt + 1, e)
             time.sleep(2 ** attempt)
 
 # --- Prompt template cache ---
