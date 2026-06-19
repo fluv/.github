@@ -154,9 +154,9 @@ def _get_gh_token() -> str:
     _gh_token_expiry = now + 3600
     return _gh_token
 
-def _gh(path: str, method: str = "GET", body=None, _retries: int = 3):
+def _gh(path: str, method: str = "GET", body=None, max_retries: int = 3):
     data = json.dumps(body).encode() if body else None
-    for attempt in range(_retries):
+    for attempt in range(max_retries):
         token = _get_gh_token()
         url = f"https://api.github.com{path}"
         req = urllib.request.Request(url, method=method, data=data)
@@ -168,11 +168,11 @@ def _gh(path: str, method: str = "GET", body=None, _retries: int = 3):
             with urllib.request.urlopen(req, timeout=30) as resp:
                 return json.load(resp)
         except urllib.error.HTTPError as e:
-            if e.code < 500 or attempt == _retries - 1:
+            if e.code < 500 or attempt == max_retries - 1:
                 raise
             time.sleep(2 ** attempt)
         except urllib.error.URLError:
-            if attempt == _retries - 1:
+            if attempt == max_retries - 1:
                 raise
             time.sleep(2 ** attempt)
 
