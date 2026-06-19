@@ -154,17 +154,27 @@ def _get_gh_token() -> str:
     _gh_token_expiry = now + 3600
     return _gh_token
 
-def _gh(path: str, method: str = "GET", body=None):
-    token = _get_gh_token()
-    url = f"https://api.github.com{path}"
+def _gh(path: str, method: str = "GET", body=None, _retries: int = 3):
     data = json.dumps(body).encode() if body else None
-    req = urllib.request.Request(url, method=method, data=data)
-    req.add_header("Authorization", f"Bearer {token}")
-    req.add_header("Accept", "application/vnd.github.v3+json")
-    req.add_header("Content-Type", "application/json")
-    req.add_header("User-Agent", "zuzak-webhook-receiver/2.0")
-    with urllib.request.urlopen(req, timeout=30) as resp:
-        return json.load(resp)
+    for attempt in range(_retries):
+        token = _get_gh_token()
+        url = f"https://api.github.com{path}"
+        req = urllib.request.Request(url, method=method, data=data)
+        req.add_header("Authorization", f"Bearer {token}")
+        req.add_header("Accept", "application/vnd.github.v3+json")
+        req.add_header("Content-Type", "application/json")
+        req.add_header("User-Agent", "zuzak-webhook-receiver/2.0")
+        try:
+            with urllib.request.urlopen(req, timeout=30) as resp:
+                return json.load(resp)
+        except urllib.error.HTTPError as e:
+            if e.code < 500 or attempt == _retries - 1:
+                raise
+            time.sleep(2 ** attempt)
+        except urllib.error.URLError:
+            if attempt == _retries - 1:
+                raise
+            time.sleep(2 ** attempt)
 
 # --- Prompt template cache ---
 
