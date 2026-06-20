@@ -263,8 +263,38 @@ def _get_repo_snapshot(repo: str, head_sha: str, exclude_prefixes: set,
         chunks.append(f"\n_(remaining files truncated at {max_bytes} bytes)_\n")
     return "".join(chunks)
 
+def _gh_paginated(path: str) -> list:
+    """Fetch all pages of a GitHub list endpoint, following Link: rel="next"."""
+    items = []
+    sep = "&" if "?" in path else "?"
+    next_path: str | None = f"{path}{sep}per_page=100"
+    while next_path:
+        token = _get_gh_token()
+        url = f"https://api.github.com{next_path}"
+        req = urllib.request.Request(url)
+        req.add_header("Authorization", f"Bearer {token}")
+        req.add_header("Accept", "application/vnd.github.v3+json")
+        req.add_header("User-Agent", "zuzak-webhook-receiver/2.0")
+        with urllib.request.urlopen(req, timeout=30) as resp:
+            page = json.load(resp)
+            items.extend(page)
+            link = resp.headers.get("Link", "")
+        next_path = None
+        for part in link.split(","):
+            part = part.strip()
+            if 'rel="next"' in part:
+                url_part = part.split(";")[0].strip()
+                if url_part.startswith("<") and url_part.endswith(">"):
+                    full_url = url_part[1:-1]
+                    prefix = "https://api.github.com"
+                    if full_url.startswith(prefix):
+                        next_path = full_url[len(prefix):]
+                break
+    return items
+
+
 def _get_prior_thread(repo: str, pr_number: int) -> str:
-    comments = _gh(f"/repos/{repo}/issues/{pr_number}/comments?per_page=100")
+    comments = _gh_paginated(f"/repos/{repo}/issues/{pr_number}/comments")
     if not comments:
         return "_(empty — this is the first review round.)_"
     return "\n".join(
@@ -278,7 +308,7 @@ def _get_pr_labels(repo: str, pr_number: int) -> str:
     return ", ".join(labels) if labels else "(none)"
 
 def _dismiss_changes_requested(repo: str, pr_number: int) -> None:
-    reviews = _gh(f"/repos/{repo}/pulls/{pr_number}/reviews?per_page=100")
+    reviews = _gh_paginated(f"/repos/{repo}/pulls/{pr_number}/reviews")
     for r in reviews:
         if r["user"]["login"] == BOT_LOGIN and r["state"] == "CHANGES_REQUESTED":
             try:
