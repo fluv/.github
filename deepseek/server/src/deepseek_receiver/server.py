@@ -263,22 +263,38 @@ def _get_repo_snapshot(repo: str, head_sha: str, exclude_prefixes: set,
         chunks.append(f"\n_(remaining files truncated at {max_bytes} bytes)_\n")
     return "".join(chunks)
 
-def _gh_paginated(path: str) -> list:
+def _gh_paginated(path: str, max_retries: int = 3) -> list:
     """Fetch all pages of a GitHub list endpoint, following Link: rel="next"."""
     items = []
     sep = "&" if "?" in path else "?"
     next_path: str | None = f"{path}{sep}per_page=100"
     while next_path:
-        token = _get_gh_token()
-        url = f"https://api.github.com{next_path}"
-        req = urllib.request.Request(url)
-        req.add_header("Authorization", f"Bearer {token}")
-        req.add_header("Accept", "application/vnd.github.v3+json")
-        req.add_header("User-Agent", "zuzak-webhook-receiver/2.0")
-        with urllib.request.urlopen(req, timeout=30) as resp:
-            page = json.load(resp)
-            items.extend(page)
-            link = resp.headers.get("Link", "")
+        link = ""
+        for attempt in range(max_retries):
+            token = _get_gh_token()
+            url = f"https://api.github.com{next_path}"
+            req = urllib.request.Request(url)
+            req.add_header("Authorization", f"Bearer {token}")
+            req.add_header("Accept", "application/vnd.github.v3+json")
+            req.add_header("User-Agent", "zuzak-webhook-receiver/2.0")
+            try:
+                with urllib.request.urlopen(req, timeout=30) as resp:
+                    page = json.load(resp)
+                    items.extend(page)
+                    link = resp.headers.get("Link", "")
+                break
+            except urllib.error.HTTPError as e:
+                if e.code < 500 or attempt == max_retries - 1:
+                    raise
+                log.warning("_gh_paginated transient error %d path=%s attempt=%d — retrying",
+                            e.code, next_path, attempt + 1)
+                time.sleep(2 ** attempt)
+            except urllib.error.URLError as e:
+                if attempt == max_retries - 1:
+                    raise
+                log.warning("_gh_paginated network error path=%s attempt=%d: %s — retrying",
+                            next_path, attempt + 1, e)
+                time.sleep(2 ** attempt)
         next_path = None
         for part in link.split(","):
             part = part.strip()
