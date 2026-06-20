@@ -101,6 +101,11 @@ repo_snapshot_errors_total = Counter(
 # Tasks remove themselves via add_done_callback(discard).
 _background_tasks: set[asyncio.Task] = set()
 
+# Dedup set for in-flight reviews. Rapid consecutive pushes to the same PR
+# (e.g. force-amend followed by a fixup) would otherwise queue multiple
+# full reviews. Only the first fires; subsequent synchronize events skip.
+_in_flight_reviews: set[tuple[str, int]] = set()
+
 # --- HMAC ---
 
 def _verify_sig(body: bytes, header: str) -> bool:
@@ -487,6 +492,11 @@ async def github_handler(request: web.Request) -> web.Response:
 
         if event == "pull_request" and action in ("opened", "synchronize", "reopened"):
             pr = payload["pull_request"]
+            review_key = (repo, pr["number"])
+            if review_key in _in_flight_reviews:
+                log.info("skip review %s#%d — already in flight", repo, pr["number"])
+                return web.Response(status=204)
+            _in_flight_reviews.add(review_key)
             event_start = time.monotonic()
             task = asyncio.create_task(asyncio.to_thread(
                 _review_pr,
@@ -497,10 +507,10 @@ async def github_handler(request: web.Request) -> web.Response:
             ))
             _background_tasks.add(task)
             task.add_done_callback(_background_tasks.discard)
-            task.add_done_callback(
-                lambda t: log.error("review task raised: %s", t.exception())
-                if t.exception() else None
-            )
+            task.add_done_callback(lambda t, k=review_key: (
+                _in_flight_reviews.discard(k),
+                log.error("review task raised: %s", t.exception()) if t.exception() else None,
+            ))
 
         elif (event == "pull_request" and action == "review_requested"
               and payload.get("requested_reviewer", {}).get("login") == BOT_LOGIN):
