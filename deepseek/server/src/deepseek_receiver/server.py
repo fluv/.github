@@ -507,10 +507,11 @@ async def github_handler(request: web.Request) -> web.Response:
             ))
             _background_tasks.add(task)
             task.add_done_callback(_background_tasks.discard)
-            task.add_done_callback(lambda t, k=review_key: (
-                _in_flight_reviews.discard(k),
-                log.error("review task raised: %s", t.exception()) if t.exception() else None,
-            ))
+            task.add_done_callback(lambda t, k=review_key: _in_flight_reviews.discard(k))
+            task.add_done_callback(
+                lambda t: log.error("review task raised: %s", t.exception())
+                if t.exception() else None
+            )
 
         elif (event == "pull_request" and action == "review_requested"
               and payload.get("requested_reviewer", {}).get("login") == BOT_LOGIN):
