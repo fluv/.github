@@ -106,6 +106,9 @@ repositories:
   - name: notebook
     spec:
       description: Basic memory-extending MCP
+  - name: octopus-exporter
+    spec:
+      description: Prometheus exporter for Octopus Energy Kraken API consumption data
   - name: printer-mcp
     spec:
       description: '"For the bit" optimised printer MCP server'
