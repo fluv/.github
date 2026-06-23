@@ -96,6 +96,9 @@ defaults:
 repositories:
   # Human-reviewed public repos (required_approving_review_count: 2)
   - name: .github # this repo
+  - name: awair-exporter
+    spec:
+      description: Prometheus exporter for Awair Element air quality monitors
   - name: barcodebuddy-docker
   - name: botsnack
   - name: kube
