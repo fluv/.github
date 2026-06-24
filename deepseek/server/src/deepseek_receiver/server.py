@@ -154,17 +154,24 @@ def _get_gh_token() -> str:
     _gh_token_expiry = now + 3600
     return _gh_token
 
+def _build_request(path: str, method: str = "GET",
+                    body: bytes | None = None) -> urllib.request.Request:
+    token = _get_gh_token()
+    url = f"https://api.github.com{path}"
+    req = urllib.request.Request(url, method=method, data=body)
+    req.add_header("Authorization", f"Bearer {token}")
+    req.add_header("Accept", "application/vnd.github.v3+json")
+    if body is not None:
+        req.add_header("Content-Type", "application/json")
+    req.add_header("User-Agent", "zuzak-webhook-receiver/2.0")
+    return req
+
+
 def _gh(path: str, method: str = "GET", body=None, max_retries: int = 3):
     data = json.dumps(body).encode() if body else None
     retries = max_retries if method == "GET" else 1
     for attempt in range(retries):
-        token = _get_gh_token()
-        url = f"https://api.github.com{path}"
-        req = urllib.request.Request(url, method=method, data=data)
-        req.add_header("Authorization", f"Bearer {token}")
-        req.add_header("Accept", "application/vnd.github.v3+json")
-        req.add_header("Content-Type", "application/json")
-        req.add_header("User-Agent", "zuzak-webhook-receiver/2.0")
+        req = _build_request(path, method=method, body=data)
         try:
             with urllib.request.urlopen(req, timeout=30) as resp:
                 return json.load(resp)
