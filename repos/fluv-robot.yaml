@@ -67,4 +67,10 @@ repositories:
   - name: lgtv-exporter
     spec:
       description: Prometheus exporter for LG WebOS TVs via SSAP WebSocket
+  - name: awair-exporter
+    spec:
+      description: Prometheus exporter for Awair Element air quality monitors
+  - name: octopus-exporter
+    spec:
+      description: Prometheus exporter for Octopus Energy Kraken API consumption data
   - name: telegram-trading
