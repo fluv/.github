@@ -73,4 +73,7 @@ repositories:
   - name: octopus-exporter
     spec:
       description: Prometheus exporter for Octopus Energy Kraken API consumption data
+  - name: meaco-exporter
+    spec:
+      description: Prometheus exporter and local control for the Meaco Arete Two dehumidifier (Tuya)
   - name: telegram-trading
