@@ -96,9 +96,6 @@ defaults:
 repositories:
   # Human-reviewed public repos (required_approving_review_count: 2)
   - name: .github # this repo
-  - name: awair-exporter
-    spec:
-      description: Prometheus exporter for Awair Element air quality monitors
   - name: barcodebuddy-docker
   - name: botsnack
   - name: kube
@@ -106,9 +103,6 @@ repositories:
   - name: notebook
     spec:
       description: Basic memory-extending MCP
-  - name: octopus-exporter
-    spec:
-      description: Prometheus exporter for Octopus Energy Kraken API consumption data
   - name: printer-mcp
     spec:
       description: '"For the bit" optimised printer MCP server'
