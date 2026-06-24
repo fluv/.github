@@ -191,6 +191,29 @@ def _gh(path: str, method: str = "GET", body=None, max_retries: int = 3):
             log.warning("_gh network error path=%s attempt=%d: %s — retrying", path, attempt + 1, e)
             time.sleep(2 ** attempt)
 
+def _next_link(link_header: str) -> str | None:
+    for part in link_header.split(","):
+        segments = part.strip().split(";")
+        if len(segments) >= 2 and 'rel="next"' in segments[1]:
+            return segments[0].strip().strip("<>")
+    return None
+
+def _gh_paginated(path: str) -> list:
+    sep = "&" if "?" in path else "?"
+    url = f"https://api.github.com{path}{sep}per_page=100"
+    results = []
+    while url:
+        token = _get_gh_token()
+        req = urllib.request.Request(url)
+        req.add_header("Authorization", f"Bearer {token}")
+        req.add_header("Accept", "application/vnd.github.v3+json")
+        req.add_header("User-Agent", "zuzak-webhook-receiver/2.0")
+        with urllib.request.urlopen(req, timeout=30) as resp:
+            page = json.load(resp)
+            results.extend(page)
+            url = _next_link(resp.headers.get("Link") or "")
+    return results
+
 # --- Prompt template cache ---
 
 _prompt_template: str = ""
@@ -276,7 +299,7 @@ def _get_repo_snapshot(repo: str, head_sha: str, exclude_prefixes: set,
     return "".join(chunks)
 
 def _get_prior_thread(repo: str, pr_number: int) -> str:
-    comments = _gh(f"/repos/{repo}/issues/{pr_number}/comments?per_page=100")
+    comments = _gh_paginated(f"/repos/{repo}/issues/{pr_number}/comments")
     if not comments:
         return "_(empty — this is the first review round.)_"
     return "\n".join(
@@ -290,7 +313,7 @@ def _get_pr_labels(repo: str, pr_number: int) -> str:
     return ", ".join(labels) if labels else "(none)"
 
 def _dismiss_changes_requested(repo: str, pr_number: int) -> None:
-    reviews = _gh(f"/repos/{repo}/pulls/{pr_number}/reviews?per_page=100")
+    reviews = _gh_paginated(f"/repos/{repo}/pulls/{pr_number}/reviews")
     for r in reviews:
         if r["user"]["login"] == BOT_LOGIN and r["state"] == "CHANGES_REQUESTED":
             try:
