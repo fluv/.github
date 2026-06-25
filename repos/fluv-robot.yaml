@@ -77,3 +77,4 @@ repositories:
     spec:
       description: Prometheus exporter and local control for the Meaco Arete Two dehumidifier (Tuya)
   - name: telegram-trading
+  - name: tf2-server
