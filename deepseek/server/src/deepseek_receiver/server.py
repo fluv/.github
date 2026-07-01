@@ -376,7 +376,7 @@ def _post_deferral_comment(repo: str, pr_number: int, end_hour: int) -> None:
         f"DS review deferred until {end_hour:02d}:00 UTC — DeepSeek peak-hour pricing "
         f"is active and push-triggered reviews are paused until the window ends. "
         f"The review will run automatically at that point. "
-        f"To override now, request a review from `fluv-deepseek[bot]` directly."
+        f"To override now, request a review from `{BOT_LOGIN}` directly."
     )
     try:
         _gh(f"/repos/{repo}/issues/{pr_number}/comments", method="POST", body={"body": body})
