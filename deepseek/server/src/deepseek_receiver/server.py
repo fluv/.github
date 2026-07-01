@@ -42,6 +42,16 @@ if not DS_ENABLED:
     log.warning("DS review disabled — GITHUB_APP_ID / GITHUB_PRIVATE_KEY / "
                 "DEEPSEEK_API_KEY not all set")
 
+# Peak-hour pricing windows (UTC): 01:00–04:00 and 06:00–10:00.
+# Push-triggered reviews are deferred during these windows to avoid 2× pricing.
+# Re-check (review_requested) events are never deferred — that is the override path.
+_PEAK_HOURS_UTC = frozenset(range(1, 4)) | frozenset(range(6, 10))
+
+
+def _is_peak_hour() -> bool:
+    return datetime.now(timezone.utc).hour in _PEAK_HOURS_UTC
+
+
 # Per-repo config — mirrors each repo's deepseek-review.yml inputs.
 REPO_CONFIG = {
     "fluv/claude": {
@@ -95,6 +105,10 @@ repo_snapshot_errors_total = Counter(
     "webhook_receiver_repo_snapshot_errors_total",
     "Snapshot pipeline errors by stage",
     ["stage"],
+)
+reviews_deferred_total = Counter(
+    "webhook_receiver_reviews_deferred_total",
+    "DS reviews deferred due to peak-hour pricing",
 )
 
 # Strong reference set — prevents asyncio tasks from being GC'd mid-flight.
@@ -525,6 +539,10 @@ async def github_handler(request: web.Request) -> web.Response:
             review_key = (repo, pr["number"])
             if review_key in _in_flight_reviews:
                 log.info("skip review %s#%d — already in flight", repo, pr["number"])
+                return web.Response(status=204)
+            if _is_peak_hour():
+                reviews_deferred_total.inc()
+                log.info("skip review %s#%d — peak-hour pricing", repo, pr["number"])
                 return web.Response(status=204)
             _in_flight_reviews.add(review_key)
             event_start = time.monotonic()
