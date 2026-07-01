@@ -42,7 +42,7 @@ if not DS_ENABLED:
     log.warning("DS review disabled — GITHUB_APP_ID / GITHUB_PRIVATE_KEY / "
                 "DEEPSEEK_API_KEY not all set")
 
-# Peak-hour pricing windows (UTC): 01:00–04:00 and 06:00–10:00.
+# Peak-hour pricing windows (UTC): 01:00–03:59 and 06:00–09:59 (range upper bound exclusive).
 # Push-triggered reviews are deferred during these windows to avoid 2× pricing.
 # Re-check (review_requested) events are never deferred — that is the override path.
 _PEAK_HOURS_UTC = frozenset(range(1, 4)) | frozenset(range(6, 10))
