@@ -77,4 +77,8 @@ repositories:
     spec:
       description: Prometheus exporter and local control for the Meaco Arete Two dehumidifier (Tuya)
   - name: telegram-trading
+    spec:
+      description: Telegram bot that trades securities based on sentiment analysis of messages
   - name: tf2-server
+    spec:
+      description: Team Fortress 2 dedicated server for the k3s cluster, with an LLM chat bot (!bot)

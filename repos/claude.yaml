@@ -4,6 +4,7 @@ metadata:
   name: claude
   owner: fluv
 spec:
+  description: Claude Code configuration for Douglas's machines — rules, settings, hooks, bin scripts
   visibility: private # do not change this without approval from @zuzak
   archived: false
   features:
