@@ -96,9 +96,15 @@ defaults:
 repositories:
   # Human-reviewed public repos (required_approving_review_count: 2)
   - name: .github # this repo
+    spec:
+      description: Org defaults, declarative repo manifests, and the DeepSeek PR-review receiver
   - name: barcodebuddy-docker
   - name: botsnack
+    spec:
+      description: Image classifier HTTP API behind the Telegram group chat's /botsnack command
   - name: kube
+    spec:
+      description: GitOps config for a personal k3s cluster (Raspberry Pi + Bitfolk VPS + autoscaled Hetzner workers), managed by Argo CD
   - name: mcp-grocy-api
   - name: notebook
     spec:

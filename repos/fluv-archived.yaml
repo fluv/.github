@@ -10,3 +10,11 @@ defaults:
 repositories:
   # Archived public repos — no active development
   - name: deepseek-review-action
+  - name: router-mcp
+    spec:
+      description: Archived MCP router experiment; cluster config removed in fluv/kube#718
+  # Archived private repos — visibility override is load-bearing, do not remove
+  - name: configuration
+    spec:
+      visibility: private
+      description: Ansible playbooks for a MediaWiki farm (dormant since 2015)
