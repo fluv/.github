@@ -34,14 +34,19 @@ jobs:
         # supported by GitHub). The repo list comes from the active
         # RepositorySet manifests (repos/fluv.yaml and repos/fluv-robot.yaml)
         # so there's a single source of truth — no duplicated list.
-        # Idempotent: repos with any commits are skipped; archived repos
+        # Idempotent: repos with any branches are skipped; archived repos
         # (repos/fluv-archived.yaml) are deliberately excluded.
+        # Emptiness is probed via the branches endpoint: it returns [] with
+        # HTTP 200 on an empty repo, whereas /commits returns 409 and gh
+        # prints the JSON error body to stdout, poisoning the capture.
+        # On any probe failure the value is non-"0" and the repo is skipped
+        # (fail-safe: never attempt to seed on a transient API error).
         run: |
           set -euo pipefail
           for manifest in repos/fluv.yaml repos/fluv-robot.yaml; do
             for repo in $(yq '.repositories[].name' "${manifest}"); do
-              commits=$(gh api "repos/fluv/${repo}/commits" --jq 'length' 2>/dev/null || echo 0)
-              if [ "${commits}" != "0" ]; then
+              branches=$(gh api "repos/fluv/${repo}/branches" --jq 'length' 2>/dev/null || echo skip)
+              if [ "${branches}" != "0" ]; then
                 continue
               fi
               echo "Seeding fluv/${repo} with initial README"
