@@ -82,3 +82,6 @@ repositories:
   - name: tf2-server
     spec:
       description: Team Fortress 2 dedicated server for the k3s cluster, with an LLM chat bot (!bot)
+  - name: slipway
+    spec:
+      description: Web service that converts recorded household data into a short daily list of concrete prompts to act
