@@ -159,10 +159,13 @@ def _get_gh_token() -> str:
     _gh_token_expiry = now + 3600
     return _gh_token
 
+_GH_API = "https://api.github.com"
+
+
 def _build_request(path: str, method: str = "GET",
                     body: bytes | None = None) -> urllib.request.Request:
     token = _get_gh_token()
-    url = f"https://api.github.com{path}"
+    url = f"{_GH_API}{path}"
     req = urllib.request.Request(url, method=method, data=body)
     req.add_header("Authorization", f"Bearer {token}")
     req.add_header("Accept", "application/vnd.github.v3+json")
@@ -200,14 +203,10 @@ def _next_link(link_header: str) -> str | None:
 
 def _gh_paginated(path: str) -> list:
     sep = "&" if "?" in path else "?"
-    url = f"https://api.github.com{path}{sep}per_page=100"
+    url = f"{_GH_API}{path}{sep}per_page=100"
     results = []
     while url:
-        token = _get_gh_token()
-        req = urllib.request.Request(url)
-        req.add_header("Authorization", f"Bearer {token}")
-        req.add_header("Accept", "application/vnd.github.v3+json")
-        req.add_header("User-Agent", "zuzak-webhook-receiver/2.0")
+        req = _build_request(url.removeprefix(_GH_API))
         with urllib.request.urlopen(req, timeout=30) as resp:
             page = json.load(resp)
             results.extend(page)
