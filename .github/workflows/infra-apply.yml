@@ -31,21 +31,26 @@ jobs:
         # via the Contents API. Without this, the first contributor to a
         # new repo would have to push directly to main (forbidden by
         # CLAUDE.md invariant 4) or open a PR with no base branch (not
-        # supported by GitHub). The repo list comes from repos/fluv.yaml
+        # supported by GitHub). The repo list comes from the active
+        # RepositorySet manifests (repos/fluv.yaml and repos/fluv-robot.yaml)
         # so there's a single source of truth — no duplicated list.
+        # Idempotent: repos with any commits are skipped; archived repos
+        # (repos/fluv-archived.yaml) are deliberately excluded.
         run: |
           set -euo pipefail
-          for repo in $(yq '.repositories[].name' repos/fluv.yaml); do
-            commits=$(gh api "repos/fluv/${repo}/commits" --jq 'length' 2>/dev/null || echo 0)
-            if [ "${commits}" != "0" ]; then
-              continue
-            fi
-            echo "Seeding fluv/${repo} with initial README"
-            content=$(printf '# %s\n\nInitial commit seeded by infra-apply. Replace via PR.\n' "${repo}" | base64 -w0)
-            gh api -X PUT "repos/fluv/${repo}/contents/README.md" \
-              -f message="Seed initial README" \
-              -f content="${content}" \
-              -f branch=main
+          for manifest in repos/fluv.yaml repos/fluv-robot.yaml; do
+            for repo in $(yq '.repositories[].name' "${manifest}"); do
+              commits=$(gh api "repos/fluv/${repo}/commits" --jq 'length' 2>/dev/null || echo 0)
+              if [ "${commits}" != "0" ]; then
+                continue
+              fi
+              echo "Seeding fluv/${repo} with initial README"
+              content=$(printf '# %s\n\nInitial commit seeded by infra-apply. Replace via PR.\n' "${repo}" | base64 -w0)
+              gh api -X PUT "repos/fluv/${repo}/contents/README.md" \
+                -f message="Seed initial README" \
+                -f content="${content}" \
+                -f branch=main
+            done
           done
         env:
           GH_TOKEN: ${{ steps.generate-token.outputs.token }}
