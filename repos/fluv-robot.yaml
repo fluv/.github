@@ -4,8 +4,41 @@ metadata:
   owner: fluv
 defaults:
   reconcile:
-    labels: additive
+    labels: additive  # create/update declared labels; never delete unlisted ones
   spec:
+    labels:
+      # vet lifecycle — keep in sync with repos/fluv.yaml (no cross-file anchors in gh-infra)
+      - name: "vet:pending"
+        color: fbca04
+        description: PR needs vet review before human review
+      - name: "vet:complete"
+        color: 0e8a16
+        description: Vet complete, no blocking issues, ready for human review
+      - name: "vet:skipped"
+        color: c5def5
+        description: Vet explicitly skipped with written reason
+      - name: "vet:deadlock"
+        color: e11d48
+        description: DS and author deadlocked; needs human adjudication
+      - name: "vet:helpful"
+        color: 1a7f37
+        description: Vet surfaced a blocker or observation that led to a code change
+      # review signals
+      - name: "ds:helpful"
+        color: 0075ca
+        description: DS review surfaced a finding worth acting on
+      - name: "autonomous-ok"
+        color: 0e8a16
+        description: Ready to implement — no design discussion needed before opening a PR
+      - name: "needs-human"
+        color: d876e3
+        description: Blocked on a human action; not ready for autonomous work
+      - name: "review this next"
+        color: 37dfb3
+        description: Claude's current recommended PRs for Douglas to review
+      - name: "needs-opus-design"
+        color: bfd4f2
+        description: Design decision deferred pending Opus-level reasoning
     visibility: public
     archived: false
     features:
