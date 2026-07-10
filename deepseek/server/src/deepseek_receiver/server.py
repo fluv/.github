@@ -42,6 +42,24 @@ if not DS_ENABLED:
     log.warning("DS review disabled — GITHUB_APP_ID / GITHUB_PRIVATE_KEY / "
                 "DEEPSEEK_API_KEY not all set")
 
+# Peak-hour pricing windows (UTC): 01:00–03:59 and 06:00–09:59 (range upper bound exclusive).
+# Push-triggered reviews are deferred during these windows to avoid 2× pricing.
+# Re-check (review_requested) events are never deferred — that is the override path.
+_PEAK_HOURS_UTC = frozenset(range(1, 4)) | frozenset(range(6, 10))
+# First hour after each peak window — the drainer fires reviews at this transition.
+_PEAK_WINDOW_END = {h: 4 for h in range(1, 4)}
+_PEAK_WINDOW_END.update({h: 10 for h in range(6, 10)})
+
+
+def _is_peak_hour() -> bool:
+    return datetime.now(timezone.utc).hour in _PEAK_HOURS_UTC
+
+
+def _next_window_end_hour() -> int:
+    """UTC hour at which the current peak window ends (exclusive upper bound)."""
+    return _PEAK_WINDOW_END.get(datetime.now(timezone.utc).hour, 0)
+
+
 # Per-repo config — mirrors each repo's deepseek-review.yml inputs.
 REPO_CONFIG = {
     "fluv/claude": {
@@ -96,6 +114,10 @@ repo_snapshot_errors_total = Counter(
     "Snapshot pipeline errors by stage",
     ["stage"],
 )
+reviews_deferred_total = Counter(
+    "webhook_receiver_reviews_deferred_total",
+    "DS reviews deferred due to peak-hour pricing",
+)
 
 # Strong reference set — prevents asyncio tasks from being GC'd mid-flight.
 # Tasks remove themselves via add_done_callback(discard).
@@ -105,6 +127,11 @@ _background_tasks: set[asyncio.Task] = set()
 # (e.g. force-amend followed by a fixup) would otherwise queue multiple
 # full reviews. Only the first fires; subsequent synchronize events skip.
 _in_flight_reviews: set[tuple[str, int]] = set()
+
+# Reviews deferred during peak-hour windows. Maps (repo, pr_number) to
+# (head_sha, base_ref, pr_author). Later pushes to the same PR replace
+# the entry so the drainer always reviews the latest head.
+_deferred_reviews: dict[tuple[str, int], tuple[str, str, str]] = {}
 
 # --- HMAC ---
 
@@ -343,6 +370,19 @@ def _apply_label(repo: str, pr_number: int, label: str) -> None:
     except Exception as e:
         log.warning("apply label %r to pr=%d failed: %s", label, pr_number, e)
 
+def _post_deferral_comment(repo: str, pr_number: int, end_hour: int) -> None:
+    body = (
+        f"DS review deferred until {end_hour:02d}:00 UTC — DeepSeek peak-hour pricing "
+        f"is active and push-triggered reviews are paused until the window ends. "
+        f"The review will run automatically at that point. "
+        f"To override now, request a review from `{BOT_LOGIN}` directly."
+    )
+    try:
+        _gh(f"/repos/{repo}/issues/{pr_number}/comments", method="POST", body={"body": body})
+    except Exception as e:
+        log.warning("post deferral comment failed pr=%d: %s", pr_number, e)
+
+
 def _call_deepseek(prompt: str, model: str) -> dict:
     payload = json.dumps({
         "model": model,
@@ -494,6 +534,51 @@ def _review_pr(repo: str, pr_number: int, head_sha: str, base_ref: str,
     log.info("review posted pr=%d verdict=%s model=%s elapsed=%.1fs",
              pr_number, verdict, actual_model, elapsed)
 
+# --- Deferred review drainer ---
+
+async def _deferred_review_drainer() -> None:
+    """Background task: fires deferred reviews once peak-hour windows end.
+
+    Polls every 60 s. When no longer in a peak window, drains _deferred_reviews
+    and starts a review task per entry. The entry always holds the latest head_sha
+    — if a PR received multiple pushes during the window, only the most recent
+    head is reviewed.
+    """
+    while True:
+        await asyncio.sleep(60)
+        if not _deferred_reviews or _is_peak_hour():
+            continue
+        log.info("peak window ended — draining %d deferred review(s)", len(_deferred_reviews))
+        for review_key, (head_sha, base_ref, pr_author) in list(_deferred_reviews.items()):
+            repo, pr_number = review_key
+            _deferred_reviews.pop(review_key, None)
+            if review_key in _in_flight_reviews:
+                log.info("deferred review %s#%d already in flight — skip", repo, pr_number)
+                continue
+            cfg = REPO_CONFIG.get(repo, DEFAULT_CONFIG)
+            _in_flight_reviews.add(review_key)
+            event_start = time.monotonic()
+            task = asyncio.create_task(asyncio.to_thread(
+                _review_pr,
+                repo, pr_number, head_sha, base_ref,
+                False, cfg, pr_author, event_start,
+            ))
+            _background_tasks.add(task)
+            task.add_done_callback(_background_tasks.discard)
+            task.add_done_callback(lambda t, k=review_key: _in_flight_reviews.discard(k))
+            task.add_done_callback(
+                lambda t: log.error("deferred review task raised: %s", t.exception())
+                if t.exception() else None
+            )
+            log.info("deferred review started %s#%d head=%.8s", repo, pr_number, head_sha)
+
+
+async def _start_drainer(app: web.Application) -> None:
+    task = asyncio.create_task(_deferred_review_drainer())
+    _background_tasks.add(task)
+    task.add_done_callback(_background_tasks.discard)
+
+
 # --- HTTP handlers ---
 
 async def github_handler(request: web.Request) -> web.Response:
@@ -524,6 +609,22 @@ async def github_handler(request: web.Request) -> web.Response:
             review_key = (repo, pr["number"])
             if review_key in _in_flight_reviews:
                 log.info("skip review %s#%d — already in flight", repo, pr["number"])
+                return web.Response(status=204)
+            if _is_peak_hour():
+                reviews_deferred_total.inc()
+                end_hour = _next_window_end_hour()
+                is_new_deferral = review_key not in _deferred_reviews
+                _deferred_reviews[review_key] = (
+                    pr["head"]["sha"], pr["base"]["ref"], pr["user"]["login"]
+                )
+                log.info("deferred review %s#%d — peak-hour pricing, window ends %02d:00 UTC",
+                         repo, pr["number"], end_hour)
+                if is_new_deferral:
+                    _t = asyncio.create_task(asyncio.to_thread(
+                        _post_deferral_comment, repo, pr["number"], end_hour
+                    ))
+                    _background_tasks.add(_t)
+                    _t.add_done_callback(_background_tasks.discard)
                 return web.Response(status=204)
             _in_flight_reviews.add(review_key)
             event_start = time.monotonic()
@@ -573,6 +674,7 @@ async def healthz(request: web.Request) -> web.Response:
 
 def main() -> None:
     app = web.Application()
+    app.on_startup.append(_start_drainer)
     app.router.add_post("/github/deepseek", github_handler)
     app.router.add_get("/metrics", metrics_handler)
     app.router.add_get("/healthz", healthz)
