@@ -21,3 +21,4 @@ To add a repo, append it under `repositories` in the appropriate file. Only add 
 ## Gotchas
 * You cannot delete repositories. If a repository is no longer used, set `archived: true` and move it to `fluv-archived.yaml`.
 * Private repos must set `rulesets: []` due to GitHub Free restrictions — they cannot use the shared RepositorySet rulesets.
+* The `defaults.spec.labels` blocks in `fluv.yaml` and `fluv-robot.yaml` must be kept identical — gh-infra has no cross-file anchors, so the duplication is by hand. A label added to one file must be added to the other in the same PR.
