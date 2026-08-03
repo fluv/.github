@@ -109,6 +109,9 @@ repositories:
   - name: meaco-exporter
     spec:
       description: Prometheus exporter and local control for the Meaco Arete Two dehumidifier (Tuya)
+  - name: haverland-exporter
+    spec:
+      description: Prometheus exporter and control for Haverland Eco-Rad radiators (Helki cloud API)
   - name: telegram-trading
     spec:
       description: Telegram bot that trades securities based on sentiment analysis of messages
