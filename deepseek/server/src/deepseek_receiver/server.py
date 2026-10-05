@@ -22,7 +22,7 @@ import urllib.error
 from datetime import datetime, timezone
 
 from aiohttp import web
-import jwt  # PyJWT — pip-installed at container startup
+import jwt
 from prometheus_client import Counter, Histogram, generate_latest, CONTENT_TYPE_LATEST
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
